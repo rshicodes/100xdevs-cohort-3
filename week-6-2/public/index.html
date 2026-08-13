@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication with JWT</title>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+    async function signup() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        await axios.post('http://localhost:3000/signup', { username, password });
+        alert('User signed up successfully!');
+    }
+
+    async function login() {
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        const response = await axios.post('http://localhost:3000/login', { username, password });
+        localStorage.setItem('token', response.data.token);
+        alert('User logged in successfully!');
+    }
+
+    async function getUserInfo() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        return;
+    }
+
+    const response = await axios.get('http://localhost:3000/me', {
+        headers: {
+            token: token
+        }
+    });
+
+    document.getElementById("user-info").innerHTML =
+        "Username: " + response.data.username;
+}
+
+getUserInfo();
+
+</script>
+    
+<body>
+    <div>
+        Sign Up
+        <input type="text" placeholder="Username" name="username" id="username">
+        <input type="password" placeholder="Password" name="password" id="password">
+        <button onclick="signup()">Sign Up</button>
+    </div>
+    <div>
+        Log In
+        <input type="text" placeholder="Username" name="username" id="login-username">
+        <input type="password" placeholder="Password" name="password" id="login-password">
+        <button onclick="login()">Log In</button>
+    </div>
+    <div>
+        User Information:
+        <div id="user-info"></div>
+    </div>
+    <div>
+        <button onclick="logout()">Log Out</button>
+    </div>
+</body>
+</html>
